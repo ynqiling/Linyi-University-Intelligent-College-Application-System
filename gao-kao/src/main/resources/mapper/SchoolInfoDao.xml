@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.gaokao.dao.SchoolInfoDao">
+    <resultMap id="BaseResultMap" type="com.example.gaokao.entity.Do.SchoolInfo">
+        <!--@mbg.generated-->
+        <!--@Table school_info-->
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="sch_id" jdbcType="VARCHAR" property="schId"/>
+        <result column="sch_name" jdbcType="VARCHAR" property="schName"/>
+        <result column="sch_english_name" jdbcType="VARCHAR" property="schEnglishName"/>
+        <result column="sch_tel_num" jdbcType="VARCHAR" property="schTelNum"/>
+        <result column="sch_logo" jdbcType="VARCHAR" property="schLogo"/>
+        <result column="sch_tags" jdbcType="VARCHAR" property="schTags"/>
+        <result column="sch_competent_desc" jdbcType="VARCHAR" property="schCompetentDesc"/>
+        <result column="sch_create_time" jdbcType="INTEGER" property="schCreateTime"/>
+        <result column="sch_run_type" jdbcType="INTEGER" property="schRunType"/>
+        <result column="sch_run_type_desc" jdbcType="VARCHAR" property="schRunTypeDesc"/>
+        <result column="diploma_desc" jdbcType="VARCHAR" property="diplomaDesc"/>
+        <result column="sch_type_tag_desc" jdbcType="VARCHAR" property="schTypeTagDesc"/>
+        <result column="sch_type_desc" jdbcType="VARCHAR" property="schTypeDesc"/>
+        <result column="grad_desc" jdbcType="VARCHAR" property="gradDesc"/>
+        <result column="province" jdbcType="LONGVARCHAR" property="province"/>
+        <result column="sch_intro" jdbcType="LONGVARCHAR" property="schIntro"/>
+        <result column="sch_address" jdbcType="VARCHAR" property="schAddress"/>
+        <result column="sch_web_url" jdbcType="LONGVARCHAR" property="schWebUrl"/>
+        <result column="sch_abroad_ratio" jdbcType="DOUBLE" property="schAbroadRatio"/>
+        <result column="sch_master_ratio" jdbcType="DOUBLE" property="schMasterRatio"/>
+        <result column="sch_scholarship" jdbcType="LONGVARCHAR" property="schScholarship"/>
+        <result column="sch_faculty_intro" jdbcType="LONGVARCHAR" property="schFacultyIntro"/>
+        <result column="soft_rank" jdbcType="INTEGER" property="softRank"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, sch_id, sch_name, sch_english_name, sch_tel_num, sch_logo, sch_tags, sch_competent_desc,
+        sch_create_time, sch_run_type, sch_run_type_desc, diploma_desc, sch_type_tag_desc,
+        sch_type_desc, grad_desc, province, sch_intro, sch_address, sch_web_url, sch_abroad_ratio,
+        sch_master_ratio, sch_scholarship, sch_faculty_intro, soft_rank
+    </sql>
+
+    <select id="getSchoolInfo" resultMap="BaseResultMap">
+        select * from school_info order by ISNULL(soft_rank),soft_rank asc
+    </select>
+    <!--  条件查询-->
+    <select id="getSchoolInfoByCondition" resultMap="BaseResultMap">
+        select * from school_info
+        <where>
+            <if test="schName!=null">
+                sch_name=#{schName}
+            </if>
+            <if test="schTypeDesc!=null">
+                <foreach item="schTypeDesc" collection="schTypeDesc.split(',')" open="(" separator="OR" close=")">
+                    sch_type_desc LIKE CONCAT('%', #{schTypeDesc}, '%')
+                </foreach>
+                and
+                <!--         and sch_type_desc=#{schTypeDesc}-->
+            </if>
+            <if test="schTypeTagDesc!=null">
+                <foreach item="schTypeTagDesc" collection="schTypeTagDesc.split(',')" open="(" separator="OR" close=")">
+                    sch_type_tag_desc LIKE CONCAT('%', #{schTypeTagDesc}, '%')
+                </foreach>
+                and
+                <!--      and provin
+                <!-           and sch_type_tag_desc like concat('%',#{schTypeTagDesc},'%')-->
+            </if>
+            <if test="diplomaDesc!=null">
+                <foreach item="diplomaDesc" collection="diplomaDesc.split(',')" open="(" separator="OR" close=")">
+                    diploma_desc LIKE CONCAT('%', #{diplomaDesc}, '%')
+                </foreach>
+                and
+
+                <!--      and diploma_desc=#{diplomaDesc}-->
+            </if>
+            <if test="schTags!=null">
+                <foreach item="schTags" collection="schTags.split(',')" open="(" separator="OR" close=")">
+                    sch_tags LIKE CONCAT('%', #{schTags}, '%')
+                </foreach>
+                and
+                <!--      and sch_tags like concat('%',#{schTags},'%')-->
+            </if>
+            <if test="gradDesc!=null">
+                and grad_desc=#{gradDesc}
+            </if>
+            <if test="province!=null">
+                <foreach item="province" collection="province.split(',')" open="(" separator="OR" close=")">
+                    province LIKE CONCAT('%', #{province}, '%')
+                </foreach>
+                <!--      and province=#{province}-->
+            </if>
+        </where>
+        order by ISNULL(soft_rank),soft_rank asc
+
+    </select>
+
+    <select id="getSchoolInfoBYid" resultMap="BaseResultMap">
+        select * from school_info where id=#{id}
+    </select>
+
+    <select id="orderSchool" resultMap="BaseResultMap">
+        select * from school_info where soft_rank between 1 and 100 order by ISNULL(soft_rank),soft_rank asc
+    </select>
+
+    <select id="getSchoolByKey" resultMap="BaseResultMap">
+        select * from school_info where sch_name LIKE CONCAT('%', #{schName}, '%')
+    </select>
+</mapper>

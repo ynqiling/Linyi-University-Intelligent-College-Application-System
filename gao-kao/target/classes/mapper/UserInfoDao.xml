@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.gaokao.dao.UserInfoDao">
+  <resultMap id="BaseResultMap" type="com.example.gaokao.entity.Do.UserInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_pwd" jdbcType="VARCHAR" property="userPwd" />
+    <result column="user_phone" jdbcType="VARCHAR" property="userPhone"/>
+    <result column="user_email" jdbcType="VARCHAR" property="userEmail"/>
+    <result column="user_authentication" jdbcType="VARCHAR" property="authentication"/>
+      <result column="real_name" jdbcType="VARCHAR" property="realName"/>
+      <result column="real_idCard" jdbcType="VARCHAR" property="realIdCard"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_name, user_pwd,user_phone,user_email,user_authentication,real_name,real_idCard
+  </sql>
+  <update id="updateAuthentication" parameterType="com.example.gaokao.entity.Do.UserInfo">
+    update user_info set user_authentication='已认证',real_name=#{userInfo.realName},real_idCard=#{userInfo.realIdCard}
+     <where>
+       <if test="userInfo.userName!=null">
+             user_name=#{userInfo.userName}
+
+            </if>
+           <if test="userInfo.userPhone!=null">
+              and user_phone=#{userInfo.userPhone}
+
+           </if>
+        <if test="userInfo.userEmail!=null">
+             and user_email=#{userInfo.userEmail}
+        </if>
+     </where>
+  </update>
+  <!--  激活码code-->
+<!--  <update id="updateUserCode" >-->
+<!--    update user_info set vip_code=${code}-->
+<!--    <where>-->
+<!--     <if test="userInfo.userName!=null">-->
+<!--       user_name=#{userInfo.userName}-->
+
+<!--     </if>-->
+<!--    <if test="userInfo.userPhone!=null">-->
+<!--       and user_phone=#{userInfo.userPhone}-->
+
+<!--    </if>-->
+<!--    <if test="userInfo.userEmail!=null">-->
+<!--      and user_email=#{userInfo.userEmail}-->
+
+<!--    </if>-->
+<!--  </where>-->
+<!--  </update>-->
+<!--  更新用户vip状态-->
+<!--  <update id="updateUserVip">-->
+<!--    update user_info set user_isvip=1-->
+<!--    <where>-->
+<!--      <if test="userInfo.userName!=null">-->
+<!--        user_name=#{userInfo.userName}-->
+
+<!--      </if>-->
+<!--      <if test="userInfo.userPhone!=null">-->
+<!--        and user_phone=#{userInfo.userPhone}-->
+
+<!--      </if>-->
+<!--      <if test="userInfo.userEmail!=null">-->
+<!--        and user_email=#{userInfo.userEmail}-->
+
+<!--      </if>-->
+<!--    </where>-->
+
+<!--  </update>-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+<!--  根据用户名密码查询-->
+    <select id="selectByUserNameAndUserPwd" resultMap="BaseResultMap">
+        select * from user_info where user_name=#{userName} or user_phone=#{userPhone} or user_email=#{userEmail} and user_pwd=#{userPwd}
+    </select>
+<!--  判断手机号是否以及注册-->
+    <select id="selectByUserPhone" resultType="com.example.gaokao.entity.Do.UserInfo">
+      select * from user_info where user_phone=#{userPhone}
+    </select>
+    <select id="selectByAuthentication" parameterType="com.example.gaokao.entity.Do.UserInfo" resultType="String">
+        select user_authentication  from user_info
+        <where>
+        <if test="userInfo.userName!=null">
+            user_name=#{userInfo.userName}
+
+        </if>
+        <if test="userInfo.userPhone!=null">
+            and user_phone=#{userInfo.userPhone}
+
+        </if>
+        <if test="userInfo.userEmail!=null">
+            and user_email=#{userInfo.userEmail}
+        </if>
+
+    </where>
+
+    </select>
+    <!--  查出用户对应的code-->
+<!--  <select id="selectByUser" resultType="int">-->
+<!--    select vip_code from user_info-->
+<!--    <where>-->
+<!--      <if test="userInfo.userName!=null">-->
+<!--        user_name=#{userInfo.userName}-->
+
+<!--      </if>-->
+<!--      <if test="userInfo.userPhone!=null">-->
+<!--        and user_phone=#{userInfo.userPhone}-->
+
+<!--      </if>-->
+<!--      <if test="userInfo.userEmail!=null">-->
+<!--        and user_email=#{userInfo.userEmail}-->
+
+<!--      </if>-->
+
+<!--    </where>-->
+<!--  </select>-->
+  <!--  用户注册-->
+  <insert id="UserRegister" keyProperty="id" useGeneratedKeys="true" parameterType="com.example.gaokao.entity.Do.UserInfo">
+    insert into user_info(user_phone,user_pwd)values(#{userPhone},#{userPwd})
+
+  </insert>
+
+  <insert id="insertContent">
+      insert into idea(userPhone,name,content)values(#{idea.userPhone},#{idea.name},#{idea.content})
+    </insert>
+
+  <insert id="insertAuth">
+         insert into auth_info(name,idCard)values (#{auth.name},#{auth.idCard})
+    </insert>
+
+  <select id="getUserByauthName" resultType="com.example.gaokao.entity.Do.AuthUser">
+       select * from auth_info where name=#{name} and idCard=#{idCard}
+    </select>
+</mapper>
